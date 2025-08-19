@@ -1,0 +1,22 @@
+name: Проверка META в артефактах
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  meta-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout кода
+        uses: actions/checkout@v4
+      - name: Проверка наличия META в артефактах
+        run: |
+          find docs/artifacts -name "*.md" -print0 | while IFS= read -r -d '' file; do
+            if ! grep -q "---META:" "$file"; then
+              echo "❌ В файле $file отсутствует META-заголовок"
+              exit 1
+            fi
+            echo "✅ В файле $file найден META-заголовок"
+          done
+          echo "🎉 Все артефакты прошли проверку."
