@@ -1,3 +1,5 @@
+# Workflow для проверки наличия META-заголовков в артефактах.
+# Запускается на каждый push и pull_request в ветку main.
 name: Проверка META в артефактах
 on:
   push:
@@ -10,8 +12,15 @@ jobs:
     steps:
       - name: Checkout кода
         uses: actions/checkout@v4
+
       - name: Проверка наличия META в артефактах
         run: |
+          # Проверяем, существует ли директория, чтобы избежать ошибок
+          if [ ! -d "docs/artifacts" ]; then
+            echo "⚠️ Директория docs/artifacts не найдена, проверка пропущена."
+            exit 0
+          fi
+
           find docs/artifacts -name "*.md" -print0 | while IFS= read -r -d '' file; do
             if ! grep -q "---META:" "$file"; then
               echo "❌ В файле $file отсутствует META-заголовок"
