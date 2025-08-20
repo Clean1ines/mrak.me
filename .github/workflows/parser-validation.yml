@@ -1,0 +1,43 @@
+name: Parser Validation
+on: [push]
+jobs:
+  validate-parser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Create and activate virtual environment
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install jsonschema pytest
+      
+      - name: Run parser tests
+        run: |
+          source .venv/bin/activate
+          pytest tests/parser_test.py --verbose
+          
+      - name: Validate YFM compliance
+        run: |
+          # Проверка использования ::: вместо ```
+          if grep -q "```" docs/**/*.md; then
+            echo "❌ Найдены блоки с ```. Требуется использовать ::: для YFM"
+            exit 1
+          fi
+          
+          # Проверка формата META
+          if grep -qE "---META:.*(\n|\r\n).*---" docs/**/*.md; then
+            echo "❌ META должен быть в одной строке (YFM-требование)"
+            exit 1
+          fi
+          
+          echo "✅ Все файлы соответствуют YFM"
