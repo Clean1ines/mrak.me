@@ -1,0 +1,517 @@
+Метапромпт для Синтеза артефактов коммитов с восстановлением деталей и WSL-оптимизацией 
+
+Описание: Этот метапромпт генерирует точные артефакты коммитов, объединяя данные из нескольких источников с восстановлением упущенных деталей и применением WSL-специфичных оптимизаций. Гарантирует соответствие требованиям Master Prompt и стандартам Яндекса. 
+
+Роль:  
+
+    QA Editor (контроль качества и восстановление упущенных элементов)
+    System Architect (WSL-оптимизация и структура артефакта)
+    Prompt Engineer (соблюдение формата и трассировки)
+     
+
+Формат:
+--- ARTIFACT_START ---
+---META:project=SLOS;type=commit-artifact;name=[название];version=vX.X.X;status=production;owner=haku;model=[авто];audience=dev/internal;scope=docops;stability=stable;validated=true;tags=[теги]--- 
+Overview 
+
+Краткое описание объединенного артефакта с указанием восстановленных элементов и ключевых улучшений. 
+Detail 
+1. Восстановленные элементы (коррекция предыдущей версии) 
+🔧 [Элемент 1] 
+
+Полное описание восстановленного компонента с техническими деталями 
+🔧 [Элемент 2] 
+
+Сравнение с упрощенной версией и обоснование восстановления 
+2. Сохраненные улучшения 
+✅ [Улучшение 1] 
+
+Описание и техническая реализация 
+3. Дополнительные проверки качества 
+✨ [Проверка 1] 
+
+Код/конфигурация для автоматической проверки 
+Examples 
+Полный скрипт/конфигурация (исправленная версия) 
+[язык]
+ 
+ 
+1
+2
+<!-- WSL: специфические комментарии -->
+[полный код с восстановленными деталями]
+ 
+ 
+Glossary 
+
+[Термин 1] — Определение, связанное с восстановленными элементами
+[Термин 2] — Определение, связанное с WSL-оптимизациями   
+Style Rules 
+
+    Все упущенные элементы восстановлены в полном объеме
+    Детали структуры → включая все подкаталоги и файлы
+    Нет сокращений в технических деталях
+    Упоминания из исходных артефактов → сохранены дословно
+     
+
+PRP Trace 
+
+Intent: Исправить упрощения в артефакте, восстановив [конкретные элементы].
+Actions:   
+
+    Восстановление [элементов] из исходных артефактов  
+    Добавление [проверок] для подтверждения целостности  
+    Сохранение всех улучшений из предыдущей версии
+    Constraints:
+     
+
+    Точное соответствие исходным артефактам  
+    Сохранение всех улучшений  
+    Строгое соответствие шаблону ARTIFACT_START/END
+     
+
+Traceability 
+
+Входные артефакты:   
+
+    [[Исходный_артефакт_vX.X]]  
+    [[Предыдущая_версия_vX.X.X]]
+     
+
+Выходные зависимости:   
+
+    [[Исправленный_артефакт_vX.X.X]]  
+    [[Связанные_инструменты]]
+     
+
+Obsidian Backlinks:
+[[Текущий_артефакт#Detail]] → [[Исходный_артефакт#Detail]]   
+
+--- ARTIFACT_END --- 
+
+Место для контента:
+1. #### Коммит 16: `[2024-02-12] feat(parser): поддержка архивирования артефактов`
+**Точный текст коммита:**
+```
+[2024-02-12] feat(parser): поддержка архивирования артефактов
+- Реализация save_all_artifacts_to_archive()
+- Автоматическое создание папки archive с датой
+- Файл: src/parser_logic.py
+```
+
+**Глубокий технический анализ:**
+Этот коммит реализует требования из раздела 3.2 (Модули) и раздела 5.5 (Disaster Recovery Plan) SLOS_Enterprise_Artefact_Suite_v1.3. Анализируя предоставленные файлы `parser logic.py.txt` и `traceability-matrix.md`, вижу, что архивирование должно соответствовать требованиям к резервному копированию.
+
+Ключевые аспекты:
+- Функция архивирования соответствует разделу 5.5 (DRP)
+- Автоматическое создание папки с датой соответствует разделу 5.5
+- Интеграция с системой трассировки из раздела 2.2
+- Учтены особенности работы с Windows
+
+**Соответствие требованиям Яндекса:**
+- Требование "готовить документацию к локализации и выполнять другие задачи, связанные с документированием": реализовано
+- Требование "ведение документации как кода (DaC)": реализовано
+- Требование "Трассируемость: каждый результат оформляй как артефакт": реализовано
+
+**Что делать:**
+1. **Создайте функцию архивирования через автоматизированный скрипт:**
+   ```powershell
+   # Глубокая автоматизация архивирования артефактов
+   $parserPath = Join-Path (Get-Location).Path "src\parser_logic.py"
+   
+   if (-not (Test-Path $parserPath)) {
+       Write-Host "❌ parser_logic.py не найден. Сначала создайте парсер (Коммит 11)" -ForegroundColor Red
+       exit 1
+   }
+   
+   # Создаем резервную копию
+   $backupPath = Join-Path (Split-Path $parserPath) "parser_logic_backup_$(Get-Date -Format 'yyyyMMddHHmmss').py"
+   Copy-Item -Path $parserPath -Destination $backupPath
+   
+   # Обновляем парсер с поддержкой архивирования
+   $updatedParser = @"
+   import os, sys, json, datetime, re, shutil
+   
+   # JSON-схема для META с обязательными полями (согласно разделу 3.3.1)
+   META_REQUIRED_KEYS = {"project", "type", "name", "version", "status"}
+   def validate_meta(meta: dict):
+       """
+       Проверяет наличие обязательных полей в META
+       Возвращает список отсутствующих ключей
+       """
+       missing = [k for k in META_REQUIRED_KEYS if k not in meta]
+       return missing
+   
+   # Добавляем расширенную валидацию для версии (согласно разделу 3.3.1)
+   def validate_version(version: str) -> bool:
+       """
+       Проверяет формат версии по шаблону vX.Y.Z
+       """
+       return bool(re.match(r'^v\d+\.\d+(\.\d+)?$', version))
+   
+   def parse_version(version_str):
+       """
+       Парсит строку версии и возвращает нормализованный формат vX.Y.Z
+       Поддерживает различные форматы: v1, 1.0, v1.0.0
+       """
+       # Удаляем префикс 'v', если он есть
+       version_str = version_str.lstrip('v')
+       
+       # Добавляем недостающие компоненты версии
+       parts = version_str.split('.')
+       if len(parts) == 1:
+           parts.extend(['0', '0'])
+       elif len(parts) == 2:
+           parts.append('0')
+           
+       # Собираем нормализованную версию
+       normalized = f"v{'.'.join(parts[:3])}"
+       return normalized
+   
+   def process_single_artifact(artifact_text):
+       """
+       Обрабатывает текст артефакта и извлекает метаданные
+       
+       Args:
+           artifact_text: Текст, содержащий артефакт
+           
+       Returns:
+           tuple: (success, message, metadata, body_content)
+           success: bool - успешность обработки
+           message: str - сообщение о результате
+           meta dict - метаданные артефакта
+           body_content: str - содержимое артефакта
+       """
+       if "--- ARTIFACT_START ---" not in artifact_text:
+           return False, "Не найден стартовый маркер артефакта", {}, ""
+       
+       try:
+           # Извлечение META-заголовка
+           meta_start = artifact_text.find("---META:") + 7
+           meta_end = artifact_text.find("---", meta_start)
+           metadata_string = artifact_text[meta_start:meta_end]
+           
+           metadata = {}
+           for pair in metadata_string.split(';'):
+               if '=' in pair:
+                   key, value = pair.split('=', 1)
+                   metadata[key.strip()] = value.strip()
+           
+           # Заполнение критически важных полей по умолчанию
+           metadata.setdefault('status', 'draft')
+           metadata.setdefault('project', metadata.get('project', 'metamrak'))
+           
+           # Расширенная валидация META (согласно разделу 6.2)
+           missing = validate_meta(metadata)
+           if missing:
+               raise KeyError(f"В META отсутствуют обязательные ключи: {', '.join(missing)}")
+           
+           # Проверка формата версии (согласно разделу 3.3.1)
+           if 'version' in metadata and not validate_version(metadata['version']):
+               raise ValueError(f"Неверный формат версии: {metadata['version']}. Требуется vX.Y.Z")
+           
+           if 'type' not in metadata or 'name' not in meta
+               raise KeyError("Отсутствуют обязательные поля 'type' или 'name' в метаданных.")
+           
+           # Извлечение содержимого
+           body_start = meta_end + 3
+           body_end = artifact_text.find("--- ARTIFACT_END ---", body_start)
+           body_content = artifact_text[body_start:body_end].strip()
+           
+           # Обработка версии из имени файла
+           if 'version' not in meta
+               version_in_name_match = re.search(r'v(\d+\.\d+(\.\d+)?)', artifact_text)
+               if version_in_name_match:
+                   metadata['version'] = f"v{version_in_name_match.group(1)}"
+       
+       except (IndexError, ValueError, KeyError) as e:
+           return False, f"Ошибка парсинга метаданных: {e}", {}, ""
+       
+       return True, "Метаданные успешно извлечены.", metadata, body_content
+   
+   def save_all_artifacts_to_archive(all_artifacts, base_path):
+       """
+       Сохраняет все артефакты в архив с датой
+       
+       Args:
+           all_artifacts: Список артефактов
+           base_path: Базовый путь для архива
+           
+       Returns:
+           str: Путь к архиву
+       """
+       current_date = datetime.date.today().strftime("%Y-%m-%d")
+       archive_path = os.path.join(base_path, 'archive', current_date)
+       os.makedirs(archive_path, exist_ok=True)
+       
+       for artifact in all_artifacts:
+           # Нормализуем версию для имени файла
+           normalized_version = parse_version(artifact['metadata']['version'])
+           filename = f"{artifact['metadata']['type']}-{artifact['metadata']['name']}-{normalized_version}.yfm"
+           with open(os.path.join(archive_path, filename), 'w', encoding='utf-8') as f:
+               f.write(artifact['raw'])
+       
+       return archive_path
+   
+   def save_latest_specs(latest_artifacts, base_path):
+       """
+       Сохраняет последние версии артефактов в спецификации
+       
+       Args:
+           latest_artifacts: Список последних версий артефактов
+           base_path: Базовый путь для спецификаций
+           
+       Returns:
+           str: Путь к спецификациям
+       """
+       specs_path = os.path.join(base_path, 'metamrak', 'specs')
+       os.makedirs(specs_path, exist_ok=True)
+       
+       # Группируем артефакты по имени
+       artifacts_by_name = {}
+       for artifact in latest_artifacts:
+           name = artifact['metadata']['name']
+           if name not in artifacts_by_name:
+               artifacts_by_name[name] = []
+           artifacts_by_name[name].append(artifact)
+       
+       # Сохраняем только последние версии
+       for name, artifacts in artifacts_by_name.items():
+           # Находим последнюю версию
+           latest_version = get_latest_version([a['metadata']['version'] for a in artifacts])
+           latest_artifact = next(a for a in artifacts if a['metadata']['version'] == latest_version)
+           
+           # Сохраняем
+           filename = f"{name}.yfm"
+           with open(os.path.join(specs_path, filename), 'w', encoding='utf-8') as f:
+               f.write(latest_artifact['raw'])
+       
+       return specs_path
+   
+   def compare_versions(version1: str, version2: str) -> int:
+       """
+       Сравнивает две версии
+       Возвращает: 
+         -1 если version1 < version2
+          0 если version1 == version2
+          1 если version1 > version2
+       """
+       # Нормализуем версии
+       v1 = parse_version(version1)
+       v2 = parse_version(version2)
+       
+       # Удаляем префикс 'v' для сравнения
+       v1_parts = [int(x) for x in v1[1:].split('.')]
+       v2_parts = [int(x) for x in v2[1:].split('.')]
+       
+       # Сравниваем по компонентам
+       for i in range(3):
+           if v1_parts[i] < v2_parts[i]:
+               return -1
+           elif v1_parts[i] > v2_parts[i]:
+               return 1
+               
+       return 0
+   
+   def get_latest_version(versions: list) -> str:
+       """
+       Находит последнюю версию из списка
+       """
+       if not versions:
+           return None
+           
+       latest = versions[0]
+       for version in versions[1:]:
+           if compare_versions(version, latest) > 0:
+               latest = version
+               
+       return latest
+   "@
+   
+   $updatedParser | Out-File -FilePath $parserPath -Encoding UTF8
+   
+   # Создаем тесты для архивирования
+   $archiveTests = @"
+   import unittest
+   import os
+   import shutil
+   from datetime import datetime
+   from src.parser_logic import save_all_artifacts_to_archive
+   
+   class TestArchive(unittest.TestCase):
+       def setUp(self):
+           self.test_dir = "test_archive"
+           if os.path.exists(self.test_dir):
+               shutil.rmtree(self.test_dir)
+           os.makedirs(self.test_dir)
+           
+           # Создаем тестовые артефакты
+           self.artifacts = [
+               {
+                   "raw": "--- ARTIFACT_START ---\n---META:project=test;type=doc;name=example;version=v1.0.0;status=draft---\n## Тест\n--- ARTIFACT_END ---",
+                   "metadata": {"type": "doc", "name": "example", "version": "v1.0.0"}
+               },
+               {
+                   "raw": "--- ARTIFACT_START ---\n---META:project=test;type=api;name=example;version=v1.1.0;status=production---\n## Тест\n--- ARTIFACT_END ---",
+                   "metadata": {"type": "api", "name": "example", "version": "v1.1.0"}
+               }
+           ]
+   
+       def tearDown(self):
+           if os.path.exists(self.test_dir):
+               shutil.rmtree(self.test_dir)
+   
+       def test_archive_creation(self):
+           """Проверка создания архива"""
+           archive_path = save_all_artifacts_to_archive(self.artifacts, self.test_dir)
+           
+           # Проверяем, что папка архива создана
+           self.assertTrue(os.path.exists(archive_path))
+           
+           # Проверяем, что в архиве есть файлы
+           files = os.listdir(archive_path)
+           self.assertEqual(len(files), 2)
+           self.assertIn("doc-example-v1.0.0.yfm", files)
+           self.assertIn("api-example-v1.1.0.yfm", files)
+   
+       def test_archive_content(self):
+           """Проверка содержимого архива"""
+           archive_path = save_all_artifacts_to_archive(self.artifacts, self.test_dir)
+           
+           # Проверяем содержимое первого файла
+           with open(os.path.join(archive_path, "doc-example-v1.0.0.yfm"), "r", encoding="utf-8") as f:
+               content = f.read()
+               self.assertIn("## Тест", content)
+   
+       def test_archive_date_format(self):
+           """Проверка формата даты в пути архива"""
+           archive_path = save_all_artifacts_to_archive(self.artifacts, self.test_dir)
+           
+           # Проверяем, что путь содержит текущую дату
+           today = datetime.today().strftime("%Y-%m-%d")
+           self.assertIn(today, archive_path)
+   
+   if __name__ == '__main__':
+       unittest.main()
+   "@
+   
+   $archiveTestsPath = Join-Path (Get-Location).Path "tests\test_archive.py"
+   $archiveTests | Out-File -FilePath $archiveTestsPath -Encoding UTF8
+   
+   # Обновляем скрипт запуска тестов
+   $runAllTests = @"
+   # Автоматический запуск всех тестов
+   Write-Host "Запуск всех тестов парсера артефактов..." -ForegroundColor Cyan
+   
+   try {
+       Write-Host "Запуск базовых тестов..." -ForegroundColor Yellow
+       python -m unittest tests\test_parser.py
+       
+       Write-Host "Запуск тестов валидации META..." -ForegroundColor Yellow
+       python -m unittest tests\test_meta_validation.py
+       
+       Write-Host "Запуск тестов обработки версий..." -ForegroundColor Yellow
+       python -m unittest tests\test_version_handling.py
+       
+       Write-Host "Запуск тестов архивирования..." -ForegroundColor Yellow
+       python -m unittest tests\test_archive.py
+       
+       Write-Host "✅ Все тесты пройдены успешно!" -ForegroundColor Green
+   } catch {
+       Write-Host "❌ Ошибка при запуске тестов: \$_" -ForegroundColor Red
+   }
+   "@
+   
+   $runAllTestsPath = Join-Path (Get-Location).Path "scripts\run-all-tests.ps1"
+   $runAllTests | Out-File -FilePath $runAllTestsPath -Encoding UTF8
+   
+   Write-Host "Архивирование артефактов добавлено в полном соответствии с SLOS_Enterprise_Artefact_Suite_v1.3" -ForegroundColor Green
+   Write-Host "Запустите: .\scripts\run-all-tests.ps1 для полной проверки" -ForegroundColor Cyan
+   Write-Host "Резервная копия старого парсера: $backupPath" -ForegroundColor DarkGray
+   ```
+
+2. **Проверьте результат:**
+   - Скрипт добавит функцию архивирования артефактов
+   - Создаст тесты для проверки работы архивирования
+   - Обновит скрипт запуска тестов
+
+**Автоматизация:**
+- Скрипт автоматически реализует систему архивирования
+- Добавляет функцию для создания архива с датой
+- Создает тесты для проверки архивирования
+- Интегрирует архивирование в процесс сохранения артефактов
+
+![Архивирование артефактов](screenshots/commit16-archive-ru.png)
+*Рис. 15. Глубокое архивирование: 1) Структура архива 2) Тесты архивирования 3) Путь с датой*
+
+---
+
+2. Коммит 16: [2024-02-12] feat(parser): поддержка архивирования артефактов
+
+    Уровень 1: Бизнес-цель
+    Обеспечить сохранность и версионирование всех созданных артефактов. Автоматическое архивирование при каждой обработке создает "снимки состояния" системы, что важно для аудита, отката изменений и анализа эволюции проекта.
+
+    Уровень 2: Архитектурное решение
+    Реализация пайплайна обработки артефактов. Теперь парсинг — это не просто извлечение данных, а процесс, имеющий побочный эффект — сохранение результата в архив. Это решение закладывает основу для более сложных пайплайнов (например, с последующей отправкой данных в базу или генерацией отчетов).
+
+    Уровень 3: Техническая реализация (WSL/Bash)
+    Скрипт добавляет в parser_logic.py функцию save_all_artifacts_to_archive и соответствующий тест tests/test_archive.py.
+    Bash
+
+    #!/bin/bash
+    # Добавление логики архивирования и тестов
+
+    echo "🚀 Модификация src/parser_logic.py..."
+    cat << 'EOF' >> src/parser_logic.py
+    import os
+    import datetime
+    import shutil
+
+    def save_all_artifacts_to_archive(artifacts: list, base_path: str):
+        """Сохраняет артефакты в архив с датой."""
+        date_str = datetime.date.today().strftime("%Y-%m-%d")
+        archive_path = os.path.join(base_path, 'archive', date_str)
+        os.makedirs(archive_path, exist_ok=True)
+
+        for artifact in artifacts:
+            meta = artifact.get('metadata', {})
+            filename = f"{meta.get('type')}-{meta.get('name')}-{meta.get('version')}.md"
+            with open(os.path.join(archive_path, filename), 'w') as f:
+                f.write(artifact.get('raw_content', ''))
+        return archive_path
+    EOF
+    echo "✅ Парсер обновлен."
+
+    echo "🚀 Создание тестов для архивирования..."
+    cat << 'EOF' > "tests/test_archive.py"
+    import unittest
+    import os
+    import shutil
+    from src.parser_logic import save_all_artifacts_to_archive
+
+    class TestArchive(unittest.TestCase):
+        def setUp(self):
+            self.test_dir = "temp_test_archive"
+            os.makedirs(self.test_dir, exist_ok=True)
+
+        def tearDown(self):
+            shutil.rmtree(self.test_dir)
+
+        def test_archive_creation(self):
+            artifacts = [{
+                'metadata': {'type': 'doc', 'name': 'test', 'version': 'v1.0.0'},
+                'raw_content': 'test'
+            }]
+            archive_path = save_all_artifacts_to_archive(artifacts, self.test_dir)
+            self.assertTrue(os.path.isdir(archive_path))
+            expected_file = os.path.join(archive_path, 'doc-test-v1.0.0.md')
+            self.assertTrue(os.path.isfile(expected_file))
+    EOF
+    echo "✅ Тесты созданы."
+
+    echo "🚀 Запуск тестов..."
+    python3 -m unittest discover tests
+
+    Уровень 4: Влияние на эксплуатацию
+    Добавляет артефакты сборки — директорию archive/. Эту директорию необходимо добавить в .gitignore, чтобы избежать ее попадания в репозиторий. Процесс парсинга теперь генерирует файлы, что важно учитывать при настройке CI/CD и локальной разработке.
+
