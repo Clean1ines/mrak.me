@@ -1,0 +1,8 @@
+# Скрываем служебные и временные файлы от просмотра на GitHub
+*.msg export-ignore
+*.log export-ignore
+*.tmp export-ignore
+/prompts/ export-ignore
+/logs/ export-ignore
+/drafts/ export-ignore
+/temp/ export-ignore
