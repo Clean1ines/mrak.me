@@ -5,4 +5,4 @@
 /prompts/ export-ignore
 /logs/ export-ignore
 /drafts/ export-ignore
-/temp/ export-ignore
+temp/ export-ignore
