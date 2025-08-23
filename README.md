@@ -8,12 +8,6 @@
 - **Reversible**: Rollback есть всегда.
 - **Docs-as-UI**: Документация — интерфейс архитектуры.
 
-## Как начать (WSL/Linux)
-1. Установите Python 3.11 и VS Code с расширением WSL.
-2. Клонируйте репозиторий: `git clone <repo_url>`
-3. Установите зависимости: `pip install -r requirements.txt`
-4. Запустите API: `uvicorn src.app:app --reload --port 8000`
-
 ## Структура проекта
 \`\`\`
 metamrak/
@@ -24,6 +18,3 @@ metamrak/
 └── requirements.txt    # Зависимости
 \`\`\`
 
-## Ключевая документация
-- [SLOS_Enterprise_Artefact_Suite_v1.3](docs/SLOS_Enterprise_Artefact_Suite_v1.3.md)
-- [Master Prompt v18.1](docs/artifacts/master-prompt-v18.1.md)
